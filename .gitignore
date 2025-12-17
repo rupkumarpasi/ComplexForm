@@ -1,0 +1,17 @@
+# Visual Studio folders
+.vs/
+bin/
+obj/
+
+# User-specific files
+*.csproj.user
+
+# Build output
+*.dll
+*.exe
+
+# Logs
+*.log
+
+# JSON settings (optional)
+appsettings.Development.json
