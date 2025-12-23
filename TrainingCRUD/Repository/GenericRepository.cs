@@ -1,7 +1,7 @@
-﻿using TrainingCRUD.Models;
-
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TrainingCRUD.Data;
-using Microsoft.EntityFrameworkCore;
+using TrainingCRUD.Models;
 
 namespace TrainingCRUD.Repository
 {
@@ -28,16 +28,16 @@ namespace TrainingCRUD.Repository
             return entity; 
         }
 
-        public async Task<bool> Update(T entity)
+        public async Task Update(T entity)
         {
              _dbSet.Update(entity);
-            return await _context.SaveChangesAsync()>0;
+            
         }
 
-        public async Task<bool> Delete(T entity)
+        public async Task Delete(T entity)
         {
              _dbSet.Remove(entity);
-           return await _context.SaveChangesAsync()>0;
+          
         }
 
         public async Task<T> GetById(int id)
@@ -45,6 +45,15 @@ namespace TrainingCRUD.Repository
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
+
+        public async Task<T?> FindOneAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
 
         public async Task<int> Count(T entity)
         {

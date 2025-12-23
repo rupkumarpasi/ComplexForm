@@ -5,6 +5,7 @@ namespace TrainingCRUD.Repository
 {
     public interface IUnitOfWork : IDisposable
     {
+        
         IStudentRepository students { get;}
         IAddressRepository addresses { get; }
 

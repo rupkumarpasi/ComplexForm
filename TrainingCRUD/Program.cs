@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TrainingCRUD.Data;
 using TrainingCRUD.Repository;
 using TrainingCRUD.Service;
+using TrainingCRUD.Automapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,14 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(connectionString); });
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<FileUploader>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(Automapper));
 
 var app = builder.Build();
 

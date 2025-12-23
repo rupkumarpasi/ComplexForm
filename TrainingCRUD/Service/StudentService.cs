@@ -1,20 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using TrainingCRUD.Dto;
 using TrainingCRUD.Models;
 using TrainingCRUD.Repository;
+
 
 namespace TrainingCRUD.Service
 {
     public class StudentService : IStudentService
     {
         private readonly IUnitOfWork _uow;
-        public StudentService(IUnitOfWork uow) 
-        
-                 {
+        private readonly FileUploader _fileuploader  ;
+        private readonly IMapper _mapper;
+
+        public StudentService(IUnitOfWork uow, FileUploader fileuploader,IMapper mapper)
+
+        {
             _uow = uow;
-       
-                       }
+            _fileuploader = fileuploader;
+            _mapper = mapper;
+            
+        }
         public async Task<Student> CreateStudent(StudentDto std)
         {
             Student student = new Student
@@ -22,12 +29,12 @@ namespace TrainingCRUD.Service
                 FirstName = std.FirstName,
                 MiddleName = std.MiddleName,
                 LastName = std.LastName,
-                Gender= std.Gender,
-
-                photoUrl = std.photoUrl,
+                Gender = std.Gender,
+                photoUrl = _fileuploader.BaseString(std.photoUrl, "photos"),
                 DateofBirth = std.DateofBirth
-                
+
             };
+
             await _uow.students.Add(student);
             await _uow.commit();
 
@@ -51,14 +58,19 @@ namespace TrainingCRUD.Service
                 await _uow.contacts.Add(contact);
 
 
-                Disablility disability = new Disablility
-                {
-                    disability = std.disablility.disability,
-                    disablilityType = std.disablility.disablilityType,
-                    disabilityPercentage = std.disablility.disabilityPercentage,
+                //Disablility disability = new Disablility
+                //{
+                //    disability = std.disablility.disability,
+                //    disablilityType = std.disablility.disablilityType,
+                //    disabilityPercentage = std.disablility.disabilityPercentage,
 
-                    StudentId = student.Id
-                };
+                //    StudentId = student.Id
+                //};
+
+                var disability = _mapper.Map<Disablility>(std.disablility);
+
+                // set foreign key manually
+                disability.StudentId = student.Id;
                 await _uow.disabilities.Add(disability);
 
                 PersonalDetail personalDetail = new PersonalDetail
@@ -89,19 +101,19 @@ namespace TrainingCRUD.Service
                 }
 
 
-                foreach(var academics in std.AcademicHistories)
+                foreach (var academics in std.AcademicHistories)
                 {
                     AcademicHistory academicHistory = new AcademicHistory
                     {
-                            Qualification= academics.Qualification,
-                            BoardUniversity=academics.BoardUniversity,
-                            InstitutionName=academics.InstitutionName,
-                            PassedYear = academics.PassedYear,
-                            GpaorDivision = academics.GpaorDivision,
-                            MarksheetPath= academics.MarksheetPath,
-                            CreatedAt= academics.CreatedAt,
-                            StudentId = student.Id
-    };
+                        Qualification = academics.Qualification,
+                        BoardUniversity = academics.BoardUniversity,
+                        InstitutionName = academics.InstitutionName,
+                        PassedYear = academics.PassedYear,
+                        GpaorDivision = academics.GpaorDivision,
+                        MarksheetPath = academics.MarksheetPath,
+                        CreatedAt = academics.CreatedAt,
+                        StudentId = student.Id
+                    };
                     await _uow.academics.Add(academicHistory);
                 }
 
@@ -109,11 +121,11 @@ namespace TrainingCRUD.Service
 
                 StudentDocument document = new StudentDocument
                 {
-                    SignaturePath = std.Documents.SignaturePath,
-                    CitizenshipDocumentPath = std.Documents.CitizenshipDocumentPath,
-                    CharacterCertificatePath = std.Documents.CharacterCertificatePath,
-                    ProvisionalAdmitCardPath = std.Documents.ProvisionalAdmitCardPath,
-                    StudentId= student.Id
+                    SignaturePath = _fileuploader.BaseString(std.Documents.SignaturePath, "signatures"),
+                    CitizenshipDocumentPath =_fileuploader.BaseString(std.Documents.CitizenshipDocumentPath, "Documents"),
+                    CharacterCertificatePath = _fileuploader.BaseString(std.Documents.CharacterCertificatePath, "charactercertificates"),
+                    ProvisionalAdmitCardPath = _fileuploader.BaseString(std.Documents.ProvisionalAdmitCardPath, "Provisional"),
+                    StudentId = student.Id
                 };
 
                 await _uow.documentinfos.Add(document);
@@ -125,18 +137,18 @@ namespace TrainingCRUD.Service
                     Description = std.faculty.Description,
                     StudentId = student.Id
                 };
-        
+
                 await _uow.faculties.Add(faculty);
 
 
-                foreach(var enroll in std.Enrollments)
+                foreach (var enroll in std.Enrollments)
                 {
                     EnrollmentDetail enrollDetail = new EnrollmentDetail
                     {
-                        Faculty =faculty,
+                        Faculty = faculty,
                         CurrentProgramEnrollment = enroll.CurrentProgramEnrollment,
                         Program = enroll.Program,
-                        CourseLevel=enroll.CourseLevel,
+                        CourseLevel = enroll.CourseLevel,
                         AcademicYear = enroll.AcademicYear,
                         SemesterOrClass = enroll.SemesterOrClass,
                         Section = enroll.Section,
@@ -144,14 +156,14 @@ namespace TrainingCRUD.Service
                         RegistrationNumber = enroll.RegistrationNumber,
                         EnrollDate = enroll.EnrollDate,
                         AcademicStatus = enroll.AcademicStatus,
-                       
-                        
-    };
+
+
+                    };
                     _uow.enrollments.Add(enrollDetail);
                 }
 
 
-                foreach(var extra in std.Extracurriculars)
+                foreach (var extra in std.Extracurriculars)
                 {
                     Extracurricular extracurricular = new Extracurricular
                     {
@@ -183,32 +195,32 @@ namespace TrainingCRUD.Service
                     AccountNumber = std.Financial.AccountNumber,
                     Branch = std.Financial.Branch,
                     StudentId = student.Id
-        //public Scholarship? scholarship { get; set; }
-    };
+                    //public Scholarship? scholarship { get; set; }
+                };
 
 
                 await _uow.financials.Add(financial);
 
 
-                foreach(var scholar in std.Scholarships)
+                foreach (var scholar in std.Scholarships)
                 {
                     Scholarship scholarship = new Scholarship
                     {
                         Financial = financial,
                         ScholarshipType = scholar.ScholarshipType,
                         ProviderName = scholar.ProviderName,
-                        ScholarshipAmount= scholar.ScholarshipAmount,
+                        ScholarshipAmount = scholar.ScholarshipAmount,
                         //FinancialStudentId = financial.Id,
-                       
 
-                       
-    };
+
+
+                    };
                     await _uow.scholarships.Add(scholarship);
                 }
 
 
 
-                foreach(var parent in std.parentDetails)
+                foreach (var parent in std.parentDetails)
                 {
                     ParentGuardianDetails parentGuardian = new ParentGuardianDetails
                     {
@@ -222,7 +234,7 @@ namespace TrainingCRUD.Service
                         Email = parent.Email,
                         FamilyIncome = parent.FamilyIncome,
                         StudentId = student.Id
-                       
+
                     };
                     await _uow.parents.Add(parentGuardian);
                 }
@@ -233,23 +245,23 @@ namespace TrainingCRUD.Service
                     IsHosteller = std.Transportation.IsHosteller,
                     TransportationMethod = std.Transportation.TransportationMethod,
                     StudentId = student.Id
-                 
+
                 };
                 await _uow.transportations.Add(transportation);
 
 
                 CitizenshipInfo citizenship = new CitizenshipInfo
                 {
-                    CitizenshipNumber= std.citizenshipInfo.CitizenshipNumber,
+                    CitizenshipNumber = std.citizenshipInfo.CitizenshipNumber,
                     IssueDate = std.citizenshipInfo.IssueDate,
                     IssueDistrict = std.citizenshipInfo.IssueDistrict,
                     CitizenshipCopyPath = std.citizenshipInfo.CitizenshipCopyPath,
                     StudentId = student.Id,
                 };
-await _uow.citizenshipInfos.Add(citizenship);
+                await _uow.citizenshipInfos.Add(citizenship);
 
 
-    });
+            });
 
             return student;
 
@@ -262,7 +274,7 @@ await _uow.citizenshipInfos.Add(citizenship);
             {
                 return false;
             }
-            
+
             await _uow.students.Delete(student);
             await _uow.commit();
             return true;
@@ -294,9 +306,9 @@ await _uow.citizenshipInfos.Add(citizenship);
             //    }
             //};
 
-           
+
         }
-        public async Task UpdateStudent(int id, UpdateStudentDto student)
+        public async Task UpdateStudent(int id, UpdateStudentDto std)
         {
             var existingStudent = await _uow.students.GetStudentWithDetail(id);
 
@@ -304,17 +316,18 @@ await _uow.citizenshipInfos.Add(citizenship);
                 throw new Exception("Student not found");
 
             // ✅ Update Student
-            existingStudent.FirstName = student.FirstName;
-            existingStudent.MiddleName = student.MiddleName;
-            existingStudent.LastName = student.LastName;
-            existingStudent.Gender = student.Gender;
-            existingStudent.photoUrl = student.photoUrl;
-            existingStudent.DateofBirth = student.DateofBirth;
+            existingStudent.FirstName = std.FirstName;
+            existingStudent.MiddleName = std.MiddleName;
+            existingStudent.LastName = std.LastName;
+            existingStudent.Gender = std.Gender;
+            existingStudent.photoUrl = std.photoUrl;
+            existingStudent.DateofBirth = std.DateofBirth;
 
-          await  _uow.students.Update(existingStudent);
+            await _uow.students.Update(existingStudent);
 
             // ✅ Remove old addresses
-            var oldAddresses = await _uow.addresses.GetByStudentId(id);
+            //var oldAddresses = await _uow.addresses.GetByStudentId(id);
+            var oldAddresses = await _uow.addresses.FindAsync(a => a.StudentId == id);  
 
             foreach (var addr in oldAddresses)
             {
@@ -323,10 +336,10 @@ await _uow.citizenshipInfos.Add(citizenship);
                 // Soft delete
             }
 
-          
+
 
             // ✅ Add new addresses
-            foreach (var addr in student.addresses)
+            foreach (var addr in std.addresses)
             {
                 var address = new Address
                 {
@@ -341,10 +354,253 @@ await _uow.citizenshipInfos.Add(citizenship);
                 };
 
                 await _uow.addresses.Add(address);
+                await _uow.commit();
             }
 
+
+            var existingContact = await _uow.contacts.FindOneAsync(c => c.StudentId == id);
+
+
+
+
+            existingContact.Email = std.contact.Email;
+            existingContact.primaryMobile = std.contact.primaryMobile;
+            existingContact.secondaryMobile = std.contact.secondaryMobile;
+            existingContact.alternateEmail = std.contact.alternateEmail;
+            existingContact.contactName = std.contact.contactName;
+            existingContact.contactNumber = std.contact.contactNumber;
+            existingContact.StudentId = id;
+
+
+
+
+            await _uow.contacts.Update(existingContact);
+
+            var existingDisability = await _uow.disabilities.FindOneAsync(d => d.StudentId == id);
+
+
+
+            existingDisability.disability = std.disablility.disability;
+            existingDisability.disablilityType = std.disablility.disablilityType;
+            existingDisability.disabilityPercentage = std.disablility.disabilityPercentage;
+
+            existingDisability.StudentId = id;
+
+            await _uow.disabilities.Update(existingDisability);
+
+
+            var existingPersonalDetail = await _uow.personals.FindOneAsync(p => p.StudentId == id);
+            existingPersonalDetail.BloodGroup = std.personalDetail.BloodGroup;
+            existingPersonalDetail.caste = std.personalDetail.caste;
+            existingPersonalDetail.religion = std.personalDetail.religion;
+            existingPersonalDetail.EthnicityType = std.personalDetail.EthnicityType;
+            existingPersonalDetail.StudentId = id;
+
+            await _uow.personals.Update(existingPersonalDetail);
+
+
+
+
+            var existingAcademicHistories = await _uow.academics.FindAsync(a => a.StudentId == id);
+            if (existingAcademicHistories != null)
+            {
+
+                foreach (var academics in existingAcademicHistories)
+                {
+
+
+                     _uow.academics.Delete(academics);
+                }
+
+            }
+
+            foreach (var academics in std.AcademicHistories)
+            {
+                AcademicHistory academicHistory = new AcademicHistory
+                {
+                    Qualification = academics.Qualification,
+                    BoardUniversity = academics.BoardUniversity,
+                    InstitutionName = academics.InstitutionName,
+                    PassedYear = academics.PassedYear,
+                    GpaorDivision = academics.GpaorDivision,
+                    MarksheetPath = academics.MarksheetPath,
+                    CreatedAt = academics.CreatedAt,
+                    StudentId = id
+                };
+                await _uow.academics.Add(academicHistory);
+                
+                
+            }
+
+
+            var existingDocument = await _uow.documentinfos.FindOneAsync(d => d.StudentId == id);
+
+
+            existingDocument.SignaturePath = std.Documents.SignaturePath;
+            existingDocument.CitizenshipDocumentPath = std.Documents.CitizenshipDocumentPath;
+            existingDocument.CharacterCertificatePath = std.Documents.CharacterCertificatePath;
+            existingDocument.ProvisionalAdmitCardPath = std.Documents.ProvisionalAdmitCardPath;
+            existingDocument.StudentId = id;
+
+
+            await _uow.documentinfos.Update(existingDocument);
+
+
+            var existingFaculty = await _uow.faculties.FindOneAsync(f => f.StudentId == id);
+
+            existingFaculty.FacultyName = std.faculty.FacultyName;
+            existingFaculty.Description = std.faculty.Description;
+            existingFaculty.StudentId = id; 
+
+
+            await _uow.faculties.Update(existingFaculty);
+
+
+            var existingEnrollments = await _uow.enrollments.FindAsync(e => e.FacultyId == existingFaculty.Id);
+            foreach (var enroll in existingEnrollments)
+            {
+                 _uow.enrollments.Delete(enroll);
+            }
+
+            foreach (var enroll in std.Enrollments)
+            {
+
+                EnrollmentDetail enrollment = new EnrollmentDetail
+                {
+                    CurrentProgramEnrollment = enroll.CurrentProgramEnrollment,
+                    Program = enroll.Program,
+                    CourseLevel = enroll.CourseLevel,
+                    AcademicYear = enroll.AcademicYear,
+                    SemesterOrClass = enroll.SemesterOrClass,
+                    Section = enroll.Section,
+                    RollNumber = enroll.RollNumber,
+                    RegistrationNumber = enroll.RegistrationNumber,
+                    EnrollDate = enroll.EnrollDate,
+                    AcademicStatus = enroll.AcademicStatus,
+                    FacultyId = existingFaculty.Id
+
+                };
+                await _uow.enrollments.Add(enrollment);
+              
+
+            }
+
+
+
+            var existingExtracurriculars = await _uow.extracurriculars.FindAsync(e => e.StudentId == id);
+            foreach (var extra in existingExtracurriculars)
+            {
+                 _uow.extracurriculars.Delete(extra);
+            }
+
+            foreach (var extra in std.Extracurriculars)
+            {
+                Extracurricular extracurricular = new Extracurricular
+                {
+
+                    ActivityType = extra.ActivityType,
+                    OtherDetails = extra.OtherDetails,
+                    CreatedAt = extra.CreatedAt,
+                    StudentId = id
+                };
+                await _uow.extracurriculars.Add(extracurricular);
+                
+
+            }
+
+
+            var existingFinancial = await _uow.financials.FindOneAsync(f => f.StudentId == id);
+
+            existingFinancial.FeeCategory = std.Financial.FeeCategory;
+            existingFinancial.AnnualFamilyIncome = std.Financial.AnnualFamilyIncome;
+            existingFinancial.BankAccountHolder = std.Financial.BankAccountHolder;
+            existingFinancial.BankName = std.Financial.BankName;
+            existingFinancial.AccountNumber = std.Financial.AccountNumber;
+            existingFinancial.Branch = std.Financial.Branch;
+               
+                //public Scholarship? scholarship { get; set; }
+        
+
+
+            await _uow.financials.Update(existingFinancial);
+
+
+            var existingScholarships = await _uow.scholarships.FindAsync(s => s.Financial.StudentId == id);
+
+            foreach (var scholar in existingScholarships)
+            {
+                 _uow.scholarships.Delete(scholar);
+            }
+
+
+            foreach (var scholar in std.Scholarships)
+            {
+                Scholarship scholarship = new Scholarship
+                {
+
+                    ScholarshipType = scholar.ScholarshipType,
+                    ProviderName = scholar.ProviderName,
+                    ScholarshipAmount = scholar.ScholarshipAmount,
+                    FinancialId = existingFinancial.Id,
+
+
+
+                };
+                await _uow.scholarships.Add(scholarship);
+                
+            }
+
+
+            var existingParents = await _uow.parents.FindAsync(p => p.StudentId == id);
+            foreach (var parent in existingParents)
+            {
+                 _uow.parents.Delete(parent);
+            }
+
+            foreach (var parent in std.parentDetails)
+            {
+                ParentGuardianDetails parentGuardian = new ParentGuardianDetails
+                {
+                    ParentType = Enum.Parse<ContactNameType>(parent.ParentType, true),
+
+                    FullName = parent.FullName,
+                    Occupation = parent.Occupation,
+                    Designation = parent.Designation,
+                    Organization = parent.Organization,
+                    MobileNumber = parent.MobileNumber,
+                    Email = parent.Email,
+                    FamilyIncome = parent.FamilyIncome,
+                    StudentId = id,
+
+                };
+                await _uow.parents.Add(parentGuardian);
+                
+            }
+
+            var existingTransportation = await _uow.transportations.FindOneAsync(t => t.StudentId == id);
+
+            existingTransportation.IsHosteller = std.Transportation.IsHosteller;
+            existingTransportation.TransportationMethod = std.Transportation.TransportationMethod;
+               
+
+            
+            await _uow.transportations.Update(existingTransportation);
+
+
+            var existingCitizenship = await _uow.citizenshipInfos.FindOneAsync(c => c.StudentId == id);
+
+            existingCitizenship.CitizenshipNumber = std.citizenshipInfo.CitizenshipNumber;
+            existingCitizenship.IssueDate = std.citizenshipInfo.IssueDate;
+            existingCitizenship.IssueDistrict = std.citizenshipInfo.IssueDistrict;
+            existingCitizenship.CitizenshipCopyPath = std.citizenshipInfo.CitizenshipCopyPath;
+                
+         
+            await _uow.citizenshipInfos.Update(existingCitizenship);
+
+
+
             await _uow.commit();
-        }
+        } 
 
 
     }
