@@ -8,9 +8,16 @@ namespace TrainingCRUD.Dto
     {
         //public int Id { get; set; }
     }
+
+    public class responseStudentDto : StudentDto
+    {
+        public int Id { get; set; }
+        public StudentDocumentDto? Documents { get; set; }
+
+    }
     public class StudentDto
     {
-        public string photoUrl { get; set; }
+        
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
@@ -27,11 +34,6 @@ namespace TrainingCRUD.Dto
 
         public List<AcademicHistoryDto>? AcademicHistories { get; set; }
 
-
-
-
-
-        public StudentDocumentDto? Documents { get; set; }
 
 
 
@@ -159,10 +161,13 @@ namespace TrainingCRUD.Dto
         public class StudentDocumentDto
         {
 
-            public IFormFile? SignaturePath { get; set; }
+        public IFormFile? photoUrl { get; set; }
 
+        public IFormFile? SignaturePath { get; set; }
 
-            public IFormFile CitizenshipDocumentPath { get; set; }
+        public IFormFile? CitizenshipCopyPath { get; set; }
+
+        public IFormFile CitizenshipDocumentPath { get; set; }
 
 
             public IFormFile? CharacterCertificatePath { get; set; }
@@ -183,7 +188,7 @@ namespace TrainingCRUD.Dto
 
             public string? IssueDistrict { get; set; }
 
-            public string? CitizenshipCopyPath { get; set; }
+           
         }
 
 
@@ -261,7 +266,7 @@ namespace TrainingCRUD.Dto
 
             public string? Branch { get; set; }
 
-
+        public ICollection<ScholarshipDto> scholarships { get; set; } = new List<ScholarshipDto>();
 
         }
 
@@ -278,7 +283,6 @@ namespace TrainingCRUD.Dto
 
             //public int? FinancialStudentId { get; set; }
 
-            public Financial? FinancialStudent { get; set; }
         }
 
         public class TransportationDto

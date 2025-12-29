@@ -12,7 +12,7 @@ namespace TrainingCRUD.Models
     public class Student : BaseEntity
     {
 
-        public string photoUrl { get; set; }
+        
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
@@ -179,6 +179,9 @@ namespace TrainingCRUD.Models
     public class StudentDocument : BaseEntity
     {
         public int? StudentId { get; set; }
+        public string photoUrl { get; set; }
+
+        public string? CitizenshipCopyPath { get; set; }
         public string? SignaturePath { get; set; }
 
         [Required]
@@ -203,7 +206,7 @@ namespace TrainingCRUD.Models
 
         public string? IssueDistrict { get; set; }
 
-        public string? CitizenshipCopyPath { get; set; }
+        
     }
 
 

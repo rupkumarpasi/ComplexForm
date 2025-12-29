@@ -30,8 +30,8 @@ namespace TrainingCRUD.Service
                 MiddleName = std.MiddleName,
                 LastName = std.LastName,
                 Gender = std.Gender,
-                //photoUrl = await _fileuploader.UploadAsync(std.photoUrl,"Photos"),
-                photoUrl = std.photoUrl,
+                
+                //photoUrl = std.photoUrl,
                 DateofBirth = std.DateofBirth
 
             };
@@ -336,7 +336,7 @@ namespace TrainingCRUD.Service
         public async Task<StudentDto> GetStudentById(int id)
         {
             var students = await _uow.students.GetStudentWithDetail(id);
-            var student = new StudentDto
+            var student = new responseStudentDto
             {
                 FirstName = students.FirstName,
                 MiddleName = students.MiddleName,
@@ -408,6 +408,8 @@ namespace TrainingCRUD.Service
         {
             var document = new StudentDocument
             {
+                CitizenshipCopyPath = await _fileuploader.UploadAsync(dto.CitizenshipCopyPath, "Citizenship_Copies"),
+                photoUrl = await _fileuploader.UploadAsync(dto.photoUrl, "Photos"),
                 SignaturePath = await _fileuploader.UploadAsync(dto.SignaturePath, "signatures"),
                 CitizenshipDocumentPath = await _fileuploader.UploadAsync(dto.CitizenshipDocumentPath, "Documents"),
                 CharacterCertificatePath = await _fileuploader.UploadAsync(dto.CharacterCertificatePath, "charactercertificates"),
@@ -549,11 +551,11 @@ namespace TrainingCRUD.Service
             var existingDocument = await _uow.documentinfos.FindOneAsync(d => d.StudentId == id);
 
 
-            existingDocument.SignaturePath = await _fileuploader.UploadAsync(std.Documents.SignaturePath, "SignaturePath");
-            existingDocument.CitizenshipDocumentPath = await _fileuploader.UploadAsync(std.Documents.CitizenshipDocumentPath, "Citizenship_Document");
-            existingDocument.CharacterCertificatePath = await _fileuploader.UploadAsync(std.Documents.CharacterCertificatePath, "Character_Certificate");
-            existingDocument.ProvisionalAdmitCardPath = await _fileuploader.UploadAsync(std.Documents.ProvisionalAdmitCardPath, "Provisional_Card");
-            existingDocument.StudentId = id;
+            //existingDocument.SignaturePath = await _fileuploader.UploadAsync(std.Documents.SignaturePath, "SignaturePath");
+            //existingDocument.CitizenshipDocumentPath = await _fileuploader.UploadAsync(std.Documents.CitizenshipDocumentPath, "Citizenship_Document");
+            //existingDocument.CharacterCertificatePath = await _fileuploader.UploadAsync(std.Documents.CharacterCertificatePath, "Character_Certificate");
+            //existingDocument.ProvisionalAdmitCardPath = await _fileuploader.UploadAsync(std.Documents.ProvisionalAdmitCardPath, "Provisional_Card");
+            //existingDocument.StudentId = id;
 
 
             await _uow.documentinfos.Update(existingDocument);
@@ -705,7 +707,7 @@ namespace TrainingCRUD.Service
             existingCitizenship.CitizenshipNumber = std.citizenshipInfo.CitizenshipNumber;
             existingCitizenship.IssueDate = std.citizenshipInfo.IssueDate;
             existingCitizenship.IssueDistrict = std.citizenshipInfo.IssueDistrict;
-            existingCitizenship.CitizenshipCopyPath = std.citizenshipInfo.CitizenshipCopyPath;
+            //existingCitizenship.CitizenshipCopyPath = std.citizenshipInfo.CitizenshipCopyPath;
                 
          
             await _uow.citizenshipInfos.Update(existingCitizenship);
