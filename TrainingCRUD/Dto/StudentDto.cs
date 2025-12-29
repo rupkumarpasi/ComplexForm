@@ -10,7 +10,7 @@ namespace TrainingCRUD.Dto
     }
     public class StudentDto
     {
-        public string? photoUrl { get; set; }
+        public string photoUrl { get; set; }
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
@@ -159,16 +159,16 @@ namespace TrainingCRUD.Dto
         public class StudentDocumentDto
         {
 
-            public string? SignaturePath { get; set; }
+            public IFormFile? SignaturePath { get; set; }
 
 
-            public string CitizenshipDocumentPath { get; set; }
+            public IFormFile CitizenshipDocumentPath { get; set; }
 
 
-            public string? CharacterCertificatePath { get; set; }
+            public IFormFile? CharacterCertificatePath { get; set; }
 
 
-            public string? ProvisionalAdmitCardPath { get; set; }
+            public IFormFile? ProvisionalAdmitCardPath { get; set; }
         }
 
 

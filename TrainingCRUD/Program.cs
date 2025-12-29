@@ -3,6 +3,7 @@ using TrainingCRUD.Data;
 using TrainingCRUD.Repository;
 using TrainingCRUD.Service;
 using TrainingCRUD.Automapper;
+using TrainingCRUD.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(co
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<FileUploader>();
+builder.Services.AddScoped<IFileUploader,FileUploader>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(Automapper));
@@ -35,6 +36,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();

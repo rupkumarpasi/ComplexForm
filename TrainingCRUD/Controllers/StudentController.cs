@@ -18,13 +18,23 @@ namespace TrainingCRUD.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStudent([FromBody] StudentDto student) // ← rename "std" → "student"
+        public async Task<IActionResult> CreateStudent([FromBody] StudentDto student, int documentId) // ← rename "std" → "student"
         {
             if (!ModelState.IsValid)
                 return BadRequest("ModelState");
 
-            var createdStudent = await _studentService.CreateStudent(student);
+            var createdStudent = await _studentService.CreateStudent(student,documentId);
             return Ok(createdStudent);
+        }
+
+        [HttpPost("UploadPhoto")]
+
+        public async Task<IActionResult> UploadPhoto([FromForm] StudentDocumentDto dto)
+        {
+            if (dto == null)
+                return BadRequest("No file uploaded.");
+            var createdDocument = await _studentService.UploadPhoto(dto);
+            return Ok(createdDocument.Id);
         }
 
         [HttpGet("{id}")]
@@ -40,7 +50,7 @@ namespace TrainingCRUD.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudent(int id, [FromBody] UpdateStudentDto studentDto)
+        public async Task<IActionResult> UpdateStudent(int id, [FromForm] UpdateStudentDto studentDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest("ModelState");

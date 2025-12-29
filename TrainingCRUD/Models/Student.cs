@@ -178,7 +178,7 @@ namespace TrainingCRUD.Models
 
     public class StudentDocument : BaseEntity
     {
-        public int StudentId { get; set; }
+        public int? StudentId { get; set; }
         public string? SignaturePath { get; set; }
 
         [Required]
