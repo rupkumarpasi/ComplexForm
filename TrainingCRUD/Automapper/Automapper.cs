@@ -16,13 +16,16 @@ namespace TrainingCRUD.Automapper
             CreateMap<DisablilityDto, Disablility>()
     .ForMember(dest => dest.StudentId, opt => opt.Ignore());
 
+            CreateMap<Disablility, DisablilityDto>();
+                
+
             CreateMap<ParentGuardianDetailsDto, ParentGuardianDetails>()
                 .ForMember(dest => dest.ParentType, opt => opt.MapFrom(src => Enum.Parse<ContactNameType>(src.ParentType, true)))
                 .ForMember(dest => dest.StudentId, opt => opt.Ignore());
 
 
-             CreateMap<ContactDto, Contact>()
-                .ForMember(dest => dest.StudentId, opt => opt.Ignore());
+            CreateMap<ContactDto, Contact>()
+               .ForMember(dest => dest.StudentId, opt => opt.Ignore()).ReverseMap();
 
             CreateMap<AddressDto, Address>()
                 .ForMember(dest => dest.StudentId, opt => opt.Ignore());

@@ -121,7 +121,6 @@ namespace TrainingCRUD.Service
                     //    InstitutionName = academics.InstitutionName,
                     //    PassedYear = academics.PassedYear,
                     //    GpaorDivision = academics.GpaorDivision,
-                    //    MarksheetPath = academics.MarksheetPath,
                     //    CreatedAt = academics.CreatedAt,
                     //    StudentId = student.Id
                     //};
@@ -333,30 +332,30 @@ namespace TrainingCRUD.Service
             return await _uow.students.GetAllStudentsWithDetail();
         }
 
-        public async Task<StudentDto> GetStudentById(int id)
+        public async Task<Student> GetStudentById(int id)
         {
             var students = await _uow.students.GetStudentWithDetail(id);
-            var student = new responseStudentDto
-            {
-                FirstName = students.FirstName,
-                MiddleName = students.MiddleName,
-                LastName = students.LastName,
-                Gender = students.Gender,
-                //photoUrl = students.photoUrl,
-                DateofBirth = students.DateofBirth,
-                disablility = _mapper.Map<DisablilityDto>(students.disablility),
-                contact = _mapper.Map<ContactDto>(students.contact),
-                addresses = _mapper.Map<List<AddressDto>>(students.addresses),
-                parentDetails = _mapper.Map<List<ParentGuardianDetailsDto>>(students.parentDetails),
-                AcademicHistories = _mapper.Map<List<AcademicHistoryDto>>(students.AcademicHistories),
-                faculty = _mapper.Map<FacultyDto>(students.Faculty),
-                Enrollments = _mapper.Map<List<EnrollmentDetailDto>>(students.Faculty.EnrollmentDetails),
-                Financial = _mapper.Map<FinancialDto>(students.Financial),
-                Scholarships = _mapper.Map<List<ScholarshipDto>>(students.Financial.scholarship),
-                Transportation = _mapper.Map<TransportationDto>(students.Transportation),
-                citizenshipInfo = _mapper.Map<CitizenshipInfoDto>(students.CitizenshipInfo),
-                Extracurriculars = _mapper.Map<List<ExtracurricularDto>>(students.Extracurriculars),
-                Documents = _mapper.Map<StudentDocumentDto>(students.Documents)
+            //var student = new responseStudentDto
+            //{
+            //    FirstName = students.FirstName,
+            //    MiddleName = students.MiddleName,
+            //    LastName = students.LastName,
+            //    Gender = students.Gender,
+            //    //photoUrl = students.photoUrl,
+            //    DateofBirth = students.DateofBirth,
+            //    disablility = _mapper.Map<DisablilityDto>(students.disablility),
+            //    contact = _mapper.Map<ContactDto>(students.contact),
+            //    addresses = _mapper.Map<List<AddressDto>>(students.addresses),
+            //    parentDetails = _mapper.Map<List<ParentGuardianDetailsDto>>(students.parentDetails),
+            //    AcademicHistories = _mapper.Map<List<AcademicHistoryDto>>(students.AcademicHistories),
+            //    faculty = _mapper.Map<FacultyDto>(students.Faculty),
+            //    Enrollments = _mapper.Map<List<EnrollmentDetailDto>>(students.Faculty.EnrollmentDetails),
+            //    Financial = _mapper.Map<FinancialDto>(students.Financial),
+            //    Scholarships = _mapper.Map<List<ScholarshipDto>>(students.Financial.scholarship),
+            //    Transportation = _mapper.Map<TransportationDto>(students.Transportation),
+            //    citizenshipInfo = _mapper.Map<CitizenshipInfoDto>(students.CitizenshipInfo),
+            //    Extracurriculars = _mapper.Map<List<ExtracurricularDto>>(students.Extracurriculars),
+            //    Documents = _mapper.Map<StudentDocumentDto>(students.Documents)
 
                 //         public DbSet<PersonalDetail> personalDetails { get; set; }
                 //public DbSet<Disablility> disablilities { get; set; }
@@ -380,8 +379,8 @@ namespace TrainingCRUD.Service
                 //public DbSet<StudentDocument> documentinfos { get; set; }
 
 
-            };
-            return student;
+            //};
+            return students;
 
             //var student = new Student
             //{
@@ -414,7 +413,7 @@ namespace TrainingCRUD.Service
                 CitizenshipDocumentPath = await _fileuploader.UploadAsync(dto.CitizenshipDocumentPath, "Documents"),
                 CharacterCertificatePath = await _fileuploader.UploadAsync(dto.CharacterCertificatePath, "charactercertificates"),
                 ProvisionalAdmitCardPath = await _fileuploader.UploadAsync(dto.ProvisionalAdmitCardPath, "Provisional"),
-                
+                MarksheetPath = await _fileuploader.UploadAsync(dto.MarksheetPath, "Marksheets")
             };
             await _uow.documentinfos.Add(document);
             await _uow.commit();
@@ -538,7 +537,7 @@ namespace TrainingCRUD.Service
                     InstitutionName = academics.InstitutionName,
                     PassedYear = academics.PassedYear,
                     GpaorDivision = academics.GpaorDivision,
-                    MarksheetPath = academics.MarksheetPath,
+                
                     CreatedAt = academics.CreatedAt,
                     StudentId = id
                 };

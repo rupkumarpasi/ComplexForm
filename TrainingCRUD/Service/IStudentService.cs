@@ -6,7 +6,7 @@ namespace TrainingCRUD.Service
     public interface IStudentService
     {
        Task<IEnumerable<Student>> GetAllStudents();
-         Task<StudentDto> GetStudentById(int id);
+         Task<Student> GetStudentById(int id);
         Task<Student> CreateStudent(StudentDto student,int documentId);
         Task UpdateStudent(int id, UpdateStudentDto student);
         Task<bool> DeleteStudent(int id);

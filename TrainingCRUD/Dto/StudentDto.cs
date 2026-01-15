@@ -151,7 +151,7 @@ namespace TrainingCRUD.Dto
 
             public string? GpaorDivision { get; set; }
 
-            public string? MarksheetPath { get; set; }
+            
 
             public DateTime? CreatedAt { get; set; }
 
@@ -173,8 +173,14 @@ namespace TrainingCRUD.Dto
             public IFormFile? CharacterCertificatePath { get; set; }
 
 
-            public IFormFile? ProvisionalAdmitCardPath { get; set; }
-        }
+        //public string? MarksheetPath { get; set; }
+
+
+        public IFormFile? ProvisionalAdmitCardPath { get; set; }
+
+
+        public IFormFile? MarksheetPath { get; set; }
+    }
 
 
 

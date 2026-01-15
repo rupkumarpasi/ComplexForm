@@ -169,7 +169,7 @@ namespace TrainingCRUD.Models
 
         public string? GpaorDivision { get; set; }
 
-        public string? MarksheetPath { get; set; }
+      
 
         public DateTime? CreatedAt { get; set; }
 
@@ -192,6 +192,9 @@ namespace TrainingCRUD.Models
 
         [Required]
         public string? ProvisionalAdmitCardPath { get; set; }
+
+        [Required]
+        public string? MarksheetPath { get; set; }
     }
 
 
